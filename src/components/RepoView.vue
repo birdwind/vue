@@ -1,13 +1,30 @@
 <template>
-  <div class="home" v-scroll="handleScroll">
+  <div v-scroll="handleScroll" id="main">
+    <ul>
+      <li v-for="(item, index) in showRepoList" :key='index' style="list-style-type:none;">
+        <v-card class="mx-auto" width="90%" height="90vh" style = "margin-top:5vh;" >
+          <v-card-text>
+            <p class="display-1 text--primary">
+              {{item.name}}
+            </p>
+            <p>{{item.html_url}}</p>
+            <div class="text--primary">
+              {{item.description}}
+            </div>
+          </v-card-text>
+        </v-card>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-// import RepoView from './components/views/RepoView.vue'
 import axios from 'axios'
+
 export default {
-  name: 'Home',
+  name: 'RepoView',
+  components: {
+    },
   data() {
         return {
             ratio: 0.05,
@@ -21,35 +38,25 @@ export default {
             titlePositon: "static",
             titleColor: "transparent",
             titleBorder:"0",
-            item: 0,
-            repoList: null
+            item: 1,
+            repoList: null,
+            showRepoList: null
         };
     },
-  components: {
-    // RepoView
-  },
   mounted() {
+        this.getGoodLists();
         window.addEventListener("scroll", this.handleScroll);
         window.onload = () => {
-          this.getGoodLists(this.item);
-            // let pic1 = document.getElementById("pic1");
-            // let pic2 = document.getElementById("pic2");
-            // let pic3 = document.getElementById("pic3");
-            // this.positionY1 = this.Y1 = pic1.offsetTop * this.ratio;
-            // this.positionY2 = this.Y2 = pic2.offsetTop * this.ratio;
-            // this.positionY3 = this.Y3 = pic3.offsetTop * this.ratio;
+          this.showRepoList = new Array();
+          this.showRepoList.push(this.repoList[0])
         };
     },
   methods: {
-    getGoodLists(item) {
+    getGoodLists() {
       axios.get('https://api.github.com/users/birdwind/repos').then((response) => {
         let res = response.data;
-        // console.log(res[item]);
-        if(res) this.repoList = new Array();
-        this.repoList.push(res[item]);
-        return res[item];
+        if(res) this.repoList = res;
       })
-          
     },
     handleScroll() {
       // 獲取捲軸被往下滾動的距離
@@ -60,33 +67,14 @@ export default {
       const { offsetHeight } = document.documentElement;
       // 當捲軸被滾動到最底部時觸發
       if (scrollTop + innerHeight + 1 > offsetHeight) {
-        console.log("test");
-        // 切換頁碼
-        // this.setPage(this.page + 1);
-        // 獲取遠端資源
-        // this.getKeys();
+        if(this.item < this.repoList.length){
+          this.showRepoList.push(this.repoList[this.item]);
+          this.item ++;
+        }
       }
       // 遠端資源回傳空陣列時，停止監聽
       return this.noData;
     }
-  },
+  }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>

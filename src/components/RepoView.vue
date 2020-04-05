@@ -59,20 +59,15 @@ export default {
       })
     },
     handleScroll() {
-      // 獲取捲軸被往下滾動的距離
       const scrollTop = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
-      // 獲取瀏覽器窗口高度
       const { innerHeight } = window;
-      // 獲取頁面高度
       const { offsetHeight } = document.documentElement;
-      // 當捲軸被滾動到最底部時觸發
       if (scrollTop + innerHeight + 1 > offsetHeight) {
         if(this.item < this.repoList.length){
           this.showRepoList.push(this.repoList[this.item]);
           this.item ++;
         }
       }
-      // 遠端資源回傳空陣列時，停止監聽
       return this.noData;
     }
   }
